@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Web Terminal</title>
+    <style>
+        body {
+            font-family: monospace;
+            background-color: #2e2e2e;
+            color: #eee;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .terminal {
+            width: 80%;
+            max-width: 700px;
+            background-color: #1e1e1e;
+            border-radius: 5px;
+            padding: 20px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+        }
+        .output {
+            height: 300px;
+            overflow-y: auto;
+            background-color: #1e1e1e;
+            padding: 10px;
+            margin-bottom: 10px;
+            border: 1px solid #555;
+            border-radius: 5px;
+            color: #7af;
+        }
+        .input-box {
+            display: flex;
+            gap: 10px;
+        }
+        .input-box input {
+            flex: 1;
+            padding: 8px;
+            border: 1px solid #555;
+            border-radius: 5px;
+            background-color: #333;
+            color: #eee;
+        }
+        .input-box button {
+            padding: 8px;
+            border: none;
+            background-color: #28a745;
+            color: #fff;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <div class="terminal">
+        <div id="output" class="output"></div>
+        <div class="input-box">
+            <input type="text" id="commandInput" placeholder="Enter command...">
+            <button onclick="executeCommand()">Run</button>
+        </div>
+    </div>
+
+    <script>
+        async function executeCommand() {
+            const command = document.getElementById("commandInput").value;
+            if (!command) return;
+
+            // Send command to server
+            const response = await fetch('/execute', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ command })
+            });
+            const data = await response.json();
+
+            // Display output
+            const outputDiv = document.getElementById("output");
+            outputDiv.innerText += `$ ${command}\n${data.output}\n`;
+            outputDiv.scrollTop = outputDiv.scrollHeight;
+
+            // Clear input field
+            document.getElementById("commandInput").value = '';
+        }
+    </script>
+</body>
+</html>
